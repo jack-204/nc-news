@@ -14,15 +14,27 @@ afterAll(() => {
 })
 
 describe('app.js', () => {
+    describe('GET invalid endpoint', () => {
+        test('404: responds with error when given a path that has no endpoint', () => {
+            return request(app).get('/api/nonsense')
+            .expect(404)
+        })
+    })
+
     describe('GET /api/topics', () => {
         test('200: responds with an array of topic objects', () => {
             return request(app).get('/api/topics')
             .expect(200)
             .then(({body}) =>{
                 const {topics} = body
+                //if the array is empty, the test fails
+                expect(topics.length > 0).toBe(true)
                 topics.forEach((topic) => {
+                    //test property name and data type of value
                     expect(topic.hasOwnProperty('slug')).toBe(true)
+                    expect(typeof topic.slug).toBe('string')
                     expect(topic.hasOwnProperty('description')).toBe(true)
+                    expect(typeof topic.description).toBe('string')
                 })
             })
         })
