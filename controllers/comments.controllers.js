@@ -1,4 +1,4 @@
-const{fetchCommentsFromArticle} = require('../models/comments.models')
+const{fetchCommentsFromArticle, addCommentToArticle} = require('../models/comments.models')
 const{checkArticleExists} = require('../utils/check-exists')
 
 exports.getCommentsFromArticle = (req, res, next) => {
@@ -17,6 +17,18 @@ exports.getCommentsFromArticle = (req, res, next) => {
             return Promise.reject({ status: 404, msg: 'No comments found for this article'})
         }
         res.status(200).send({ comments })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.postCommentToArticle = (req, res, next) => {
+    const {article_id} = req.params
+    const newComment = req.body
+    
+    addCommentToArticle(article_id, newComment).then((comment) => {
+        res.status(201).send({ comment })
     })
     .catch((err) => {
         next(err)
