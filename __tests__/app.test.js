@@ -211,4 +211,66 @@ describe('app.js', () => {
             })
         })
     })
+
+    describe('POST /api/articles/:article_id/comments', () => {
+        test('201: adds an item into the comments table with the correct keys', () => {
+            const input = {
+                username: 'lurker',
+                body: 'example body'
+            }
+            return request(app).post('/api/articles/1/comments').send(input)
+            .expect(201)
+            .then(({body}) => {
+                const {comment} = body
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.body).toBe('string')
+                expect(typeof comment.article_id).toBe('number')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.votes).toBe('number')
+                expect(typeof comment.created_at).toBe('string')
+            })
+        })
+        test('400: responds with an error if not provided with a body', () => {
+            const input = {
+                username: 'lurker'
+            }
+            return request(app).post('/api/articles/1/comments').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request: incomplete')
+            })
+        })
+        test('400: resonds with an error if not given a valid username', () => {
+            const input = {
+                username: 'example',
+                body: 'example body'
+            }
+            return request(app).post('/api/articles/1/comments').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('400: responds with an error if given an invalid article_id in the path', () => {
+            const input = {
+                username: 'lurker',
+                body: 'example'
+            }
+            return request(app).post('/api/articles/nonsense/comments').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('400: responds with an error if given an article id that doesnt exist', () => {
+            const input = {
+                username: 'lurker',
+                body: 'example'
+            }
+            return request(app).post('/api/articles/40000/comments').send(input)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
 })

@@ -63,5 +63,21 @@
       }
     ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a new comment to the comments table",
+    "queries": [],
+    "parameters": ["article_id"],
+    "body": {
+      "body": "example body",
+      "username" : "example username"
+    },
+    "exampleResponse": {
+      "comment_id" : 1,
+      "article_id" : 1,
+      "body" : "example body",
+      "created_at": "2020-04-06T12:17:00.000Z",
+      "author" : "example username"
+    }
   }
 }
