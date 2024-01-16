@@ -66,6 +66,7 @@ describe('app.js', () => {
                 const {article} = body
                 expect(article).toMatchObject(
                     {
+                        article_id: 1,
                         title: "Living in the shadow of a great man",
                         topic: "mitch",
                         author: "butter_bridge",
