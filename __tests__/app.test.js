@@ -4,7 +4,7 @@ const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const fs = require('fs/promises')
-const {convertTimestampToDate} = require('../db/seeds/utils')
+require('jest-sorted')
 
 beforeEach(() => {
     return seed(data)
@@ -89,6 +89,50 @@ describe('app.js', () => {
             .expect(400)
             .then(({body}) => {
                 expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
+
+    describe('GET /api/articles', () => {
+        test('200: responds with all articles', () => {
+            return request(app).get('/api/articles')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles.length > 0).toBe(true)
+                articles.forEach((article) => {
+                    expect(article.hasOwnProperty('author')).toBe(true)
+                    expect(typeof article.author).toBe('string')
+
+                    expect(article.hasOwnProperty('title')).toBe(true)
+                    expect(typeof article.title).toBe('string')
+
+                    expect(article.hasOwnProperty('article_id')).toBe(true)
+                    expect(typeof article.article_id).toBe('number')
+
+                    expect(article.hasOwnProperty('topic')).toBe(true)
+                    expect(typeof article.topic).toBe('string')
+
+                    expect(article.hasOwnProperty('created_at')).toBe(true)
+                    expect(typeof article.created_at).toBe('string')
+
+                    expect(article.hasOwnProperty('votes')).toBe(true)
+                    expect(typeof article.votes).toBe('number')
+
+                    expect(article.hasOwnProperty('article_img_url')).toBe(true)
+                    expect(typeof article.article_img_url).toBe('string')
+
+                    expect(article.hasOwnProperty('comment_count')).toBe(true)
+                    expect(article.hasOwnProperty('body')).toBe(false)
+                })
+            })
+        })
+        test('200: articles are sorted by date in descending order', () => {
+            return request(app).get('/api/articles')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles).toBeSorted({ key: 'created_at', descending: true})
             })
         })
     })
