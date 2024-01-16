@@ -137,4 +137,78 @@ describe('app.js', () => {
             })
         })
     })
+
+    describe('GET /api/articles/:article_id/comments', () => {
+        test('200: responds with an array of comments with the right properties', () => {
+            return request(app).get('/api/articles/1/comments')
+            .expect(200)
+            .then(({body}) => {
+                const {comments} = body
+                comments.forEach((comment) => {
+                    expect(comment.hasOwnProperty('comment_id')).toBe(true)
+                    expect(typeof comment.comment_id).toBe('number')
+
+                    expect(comment.hasOwnProperty('votes')).toBe(true)
+                    expect(typeof comment.votes).toBe('number')
+
+                    expect(comment.hasOwnProperty('created_at')).toBe(true)
+                    expect(typeof comment.created_at).toBe('string')
+
+                    expect(comment.hasOwnProperty('author')).toBe(true)
+                    expect(typeof comment.author).toBe('string')
+
+                    expect(comment.hasOwnProperty('body')).toBe(true)
+                    expect(typeof comment.body).toBe('string')
+
+                    expect(comment.hasOwnProperty('article_id')).toBe(true)
+                    expect(typeof comment.article_id).toBe('number')
+                })
+            })
+        })
+        test('200: response is ordered by with the most recent comments first', () => {
+            return request(app).get('/api/articles/1/comments')
+            .expect(200)
+            .then(({body}) => {
+                const {comments} = body
+                expect(comments).toBeSorted({ key: 'created_at', ascending: true})
+            })
+        })
+        test('200: response has the correct data', () => {
+            return request(app).get('/api/articles/9/comments')
+            .expect(200)
+            .then(({body}) => {
+                const {comments} = body
+                const testedComment = comments[1]
+                expect(testedComment).toMatchObject({
+                    comment_id: 1,
+                    votes: 16,
+                    author: 'butter_bridge',
+                    article_id: 9,
+                    created_at: '2020-04-06T12:17:00.000Z',
+                })
+
+            })
+        })
+        test('400: throws error if given invalid input', () => {
+            return request(app).get('/api/articles/nonsense/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('404: throws error for no comments found at a valid article id', () => {
+            return request(app).get('/api/articles/2/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('No comments found for this article')
+            })
+        })
+        test('404: throws error when given article id that doesnt exist', () => {
+            return request(app).get('/api/articles/4000/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('Article requested not found')
+            })
+        })
+    })
 })
