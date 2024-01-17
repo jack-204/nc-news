@@ -329,4 +329,30 @@ describe('app.js', () => {
             })
         })
     })
+
+    describe('DELETE /api/comments/:comment_id', () => {
+        test('204: succesfully deletes item by id', () => {
+            return request(app).delete('/api/comments/1')
+            .expect(204)
+            .then(() => {
+                return db.query('SELECT * FROM comments WHERE comment_id = 1;')
+            }).then(({rows}) => {
+                expect(rows).toEqual([])
+            })
+        })
+        test('404: fails if comment id is not found', () => {
+            return request(app).delete('/api/comments/40000')
+            .expect(404)
+            .then(({body})=> {
+                expect(body.msg).toBe('Not found')
+            })
+        })
+        test('400: fails if comment_id is not valid', () => {
+            return request(app).delete('/api/comments/abc')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
 })

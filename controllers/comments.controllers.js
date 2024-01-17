@@ -1,4 +1,4 @@
-const{fetchCommentsFromArticle, addCommentToArticle} = require('../models/comments.models')
+const{fetchCommentsFromArticle, addCommentToArticle, removeCommentById} = require('../models/comments.models')
 const{checkArticleExists} = require('../utils/check-exists')
 
 exports.getCommentsFromArticle = (req, res, next) => {
@@ -31,6 +31,16 @@ exports.postCommentToArticle = (req, res, next) => {
         res.status(201).send({ comment })
     })
     .catch((err) => {
+        next(err)
+    })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const {comment_id} = req.params
+
+    removeCommentById(comment_id).then(()=>{
+        res.status(204).send()
+    }).catch((err) => {
         next(err)
     })
 }
