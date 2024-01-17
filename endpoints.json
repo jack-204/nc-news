@@ -96,5 +96,10 @@
       "votes" : 2,
       "article_img_url" : "example image url"
     }
+  },
+  "DELETE /api/comments/:comment_id" : {
+    "description": "removes a comment from the database by id",
+    "queries": [],
+    "parameters": ["comment_id"]
   }
 }
