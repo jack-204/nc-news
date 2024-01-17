@@ -355,4 +355,20 @@ describe('app.js', () => {
             })
         })
     })
+
+    describe('GET /api/users', () => {
+        test('200: get users gets an array of user objects', () => {
+            return request(app).get('/api/users')
+            .expect(200)
+            .then(({body}) => {
+                const {users} = body
+                expect(users.length > 0).toBe(true)
+                users.forEach((user) => {
+                    expect(typeof user.username).toBe('string')
+                    expect(typeof user.name).toBe('string')
+                    expect(typeof user.avatar_url).toBe('string')
+                })
+            })
+        })
+    })
 })

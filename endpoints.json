@@ -101,5 +101,13 @@
     "description": "removes a comment from the database by id",
     "queries": [],
     "parameters": ["comment_id"]
+  },
+  "GET /api/users" : {
+    "description": "gets all users in database",
+    "queries" : [],
+    "parameters" : [],
+    "body": {
+      "users": [{"username": "example username", "name" : "example name", "avatar_url": "example avatar_url"}]
+    }
   }
 }
