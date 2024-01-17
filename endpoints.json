@@ -79,5 +79,22 @@
       "created_at": "2020-04-06T12:17:00.000Z",
       "author" : "example username"
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increases/decreases votes on an article",
+    "queries": [],
+    "parameters": ["article_id"],
+    "body": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "article_id": 1,
+      "title" : "example title",
+      "author" : "example author",
+      "body" : "example body",
+      "created_at" : "example date",
+      "votes" : 2,
+      "article_img_url" : "example image url"
+    }
   }
 }
