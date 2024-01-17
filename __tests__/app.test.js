@@ -179,9 +179,9 @@ describe('app.js', () => {
         })
         test('400: throws error when given article id that doesnt exist', () => {
             return request(app).get('/api/articles/4000/comments')
-            .expect(400)
+            .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe('Bad request')
+                expect(body.msg).toBe('Article requested not found')
             })
         })
     })
@@ -294,9 +294,9 @@ describe('app.js', () => {
                 inc_votes : 1 
             }
             return request(app).patch('/api/articles/20000').send(input)
-            .expect(400)
+            .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe('Bad request')
+                expect(body.msg).toBe('Article requested not found')
             })
         })
     })
