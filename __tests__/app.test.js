@@ -130,22 +130,11 @@ describe('app.js', () => {
             .then(({body}) => {
                 const {comments} = body
                 comments.forEach((comment) => {
-                    expect(comment.hasOwnProperty('comment_id')).toBe(true)
                     expect(typeof comment.comment_id).toBe('number')
-
-                    expect(comment.hasOwnProperty('votes')).toBe(true)
                     expect(typeof comment.votes).toBe('number')
-
-                    expect(comment.hasOwnProperty('created_at')).toBe(true)
                     expect(typeof comment.created_at).toBe('string')
-
-                    expect(comment.hasOwnProperty('author')).toBe(true)
                     expect(typeof comment.author).toBe('string')
-
-                    expect(comment.hasOwnProperty('body')).toBe(true)
                     expect(typeof comment.body).toBe('string')
-
-                    expect(comment.hasOwnProperty('article_id')).toBe(true)
                     expect(typeof comment.article_id).toBe('number')
                 })
             })
@@ -181,11 +170,11 @@ describe('app.js', () => {
                 expect(body.msg).toBe('Bad request')
             })
         })
-        test('404: throws error for no comments found at a valid article id', () => {
+        test('200: gives an empty array when no comments found at article', () => {
             return request(app).get('/api/articles/2/comments')
-            .expect(404)
+            .expect(200)
             .then(({body}) => {
-                expect(body.msg).toBe('No comments found for this article')
+                expect(body.comments).toEqual([])
             })
         })
         test('400: throws error when given article id that doesnt exist', () => {

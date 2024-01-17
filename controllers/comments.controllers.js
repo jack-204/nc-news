@@ -14,7 +14,7 @@ exports.getCommentsFromArticle = (req, res, next) => {
         const comments = response[0]
         if (comments.length === 0) {
             //this logic would be in the model if it wasnt for the fact I was getting async problems
-            return Promise.reject({ status: 404, msg: 'No comments found for this article'})
+            res.status(200).send({comments: []})
         }
         res.status(200).send({ comments })
     })
