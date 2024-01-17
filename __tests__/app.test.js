@@ -177,7 +177,7 @@ describe('app.js', () => {
                 expect(body.comments).toEqual([])
             })
         })
-        test('400: throws error when given article id that doesnt exist', () => {
+        test('404: throws error when given article id that doesnt exist', () => {
             return request(app).get('/api/articles/4000/comments')
             .expect(404)
             .then(({body}) => {
@@ -269,14 +269,25 @@ describe('app.js', () => {
                 expect(article.votes).toBe(1)
             })
         })
-        test('400: patch fails if given wrong key', () => {
+        test('200: returns unpatched array if given wrong key', () => {
             const input = {
                 title : 'new title'
             }
             return request(app).patch('/api/articles/1').send(input)
-            .expect(400)
+            .expect(200)
             .then(({body}) => {
-                expect(body.msg).toBe('Bad request')
+                const {article} = body
+                const expected = {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2020-07-09T20:11:00.000Z",
+                    votes: 100,
+                    article_img_url:"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                }
+                expect(article).toEqual(expected)
             })
         })
         test('400: patch fails if given wrong data', () => {
@@ -289,7 +300,7 @@ describe('app.js', () => {
                 expect(body.msg).toBe('Bad request')
             })
         })
-        test('400: patch fails if given id that does not refer to an article', () => {
+        test('404: patch fails if given id that does not refer to an article', () => {
             const input = {
                 inc_votes : 1 
             }
@@ -297,6 +308,24 @@ describe('app.js', () => {
             .expect(404)
             .then(({body}) => {
                 expect(body.msg).toBe('Article requested not found')
+            })
+        })
+        test('200: if inc_votes is missing, original article is returned and is not updated', () => {
+            return request(app).patch('/api/articles/1').send({})
+            .expect(200)
+            .then(({body}) => {
+                const {article} = body
+                const expected = {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2020-07-09T20:11:00.000Z",
+                    votes: 100,
+                    article_img_url:"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                }
+                expect(article).toEqual(expected)
             })
         })
     })

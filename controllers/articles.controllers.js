@@ -19,11 +19,17 @@ exports.getAllArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
     const {article_id} = req.params
     const {inc_votes} = req.body
-    const q1 = updateArticleVotes(article_id, inc_votes)
-    const queries = [q1]
 
-    const q2 = checkArticleExists(article_id)
-    queries.push(q2)
+    if (!inc_votes) {
+        fetchArticleById(article_id).then((article) => {
+            res.status(200).send({article})
+        })
+    }
+    const query1 = updateArticleVotes(article_id, inc_votes)
+    const queries = [query1]
+
+    const query2 = checkArticleExists(article_id)
+    queries.push(query2)
 
     Promise.all(queries)
 
