@@ -197,10 +197,10 @@ describe('app.js', () => {
             .then(({body}) => {
                 const {comment} = body
                 expect(typeof comment.comment_id).toBe('number')
-                expect(typeof comment.body).toBe('string')
-                expect(typeof comment.article_id).toBe('number')
-                expect(typeof comment.author).toBe('string')
-                expect(typeof comment.votes).toBe('number')
+                expect(comment.body).toBe('example body')
+                expect(comment.article_id).toBe(1)
+                expect(comment.author).toBe('lurker')
+                expect(comment.votes).toBe(0)
                 expect(typeof comment.created_at).toBe('string')
             })
         })
