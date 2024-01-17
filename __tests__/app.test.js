@@ -203,11 +203,11 @@ describe('app.js', () => {
                 expect(body.msg).toBe('No comments found for this article')
             })
         })
-        test('404: throws error when given article id that doesnt exist', () => {
+        test('400: throws error when given article id that doesnt exist', () => {
             return request(app).get('/api/articles/4000/comments')
-            .expect(404)
+            .expect(400)
             .then(({body}) => {
-                expect(body.msg).toBe('Article requested not found')
+                expect(body.msg).toBe('Bad request')
             })
         })
     })
@@ -237,7 +237,7 @@ describe('app.js', () => {
             return request(app).post('/api/articles/1/comments').send(input)
             .expect(400)
             .then(({body}) => {
-                expect(body.msg).toBe('Bad request: incomplete')
+                expect(body.msg).toBe('Bad request')
             })
         })
         test('400: resonds with an error if not given a valid username', () => {
@@ -268,6 +268,59 @@ describe('app.js', () => {
                 body: 'example'
             }
             return request(app).post('/api/articles/40000/comments').send(input)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
+    describe('PATCH /api/articles/:article_id', () => {
+        test('200: patch increases the votes on the requested article', () => {
+            const input = {
+                inc_votes : 1 
+            }
+            return request(app).patch('/api/articles/1').send(input)
+            .expect(200)
+            .then(({body}) => {
+                const {article} = body
+                expect(article.votes).toBe(101)
+            })
+        })
+        test('200: patch decreases the votes on the requested article', () => {
+            const input = {
+                inc_votes : -99
+            }
+            return request(app).patch('/api/articles/1').send(input)
+            .then(({body}) => {
+                const {article} = body
+                expect(article.votes).toBe(1)
+            })
+        })
+        test('400: patch fails if given wrong key', () => {
+            const input = {
+                title : 'new title'
+            }
+            return request(app).patch('/api/articles/1').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('400: patch fails if given wrong data', () => {
+            const input = {
+                inc_votes : 'test'
+            }
+            return request(app).patch('/api/articles/1').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('400: patch fails if given id that does not refer to an article', () => {
+            const input = {
+                inc_votes : 1 
+            }
+            return request(app).patch('/api/articles/20000').send(input)
+            .expect(400)
             .then(({body}) => {
                 expect(body.msg).toBe('Bad request')
             })
