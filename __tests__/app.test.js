@@ -384,7 +384,7 @@ describe('app.js', () => {
                 })
             })
         })
-        test('404: no articles exist with given topic', () => {
+        test('404: no articles exist with given topic', () => { //topic is invalid
             return request(app).get('/api/articles?topic=nonsense')
             .expect(404)
             .then(({body}) => {
@@ -397,6 +397,14 @@ describe('app.js', () => {
             .then(({body}) => {
                 const {articles} = body
                 expect(articles.length).toBe(13)
+            })
+        })
+        test('200: returns empty articles array for valid topic with no articles on it', () => {
+            return request(app).get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles.length).toBe(0)
             })
         })
     })

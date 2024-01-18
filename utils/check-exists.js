@@ -8,3 +8,13 @@ exports.checkArticleExists = (article_id) => {
         }
     })
 }
+
+exports.checkTopicExists = (topic) => {
+    console.log(topic)
+    return db.query(`SELECT * FROM topics WHERE slug = '${topic}';`)
+    .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg : 'Not found' })
+        }
+    })
+}

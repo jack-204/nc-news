@@ -1,5 +1,5 @@
 const {fetchArticleById, fetchAllArticles, updateArticleVotes} = require('../models/articles.models')
-const{checkArticleExists} = require('../utils/check-exists')
+const{checkArticleExists, checkTopicExists} = require('../utils/check-exists')
 
 exports.getArticleById = (req, res, next) => {
     const {article_id} = req.params
@@ -12,11 +12,28 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
     const{topic} = req.query
-    fetchAllArticles(topic).then((articles) => {
-        res.status(200).send({ articles })
-    }).catch((err) => {
-        next(err)
-    })
+    if(!topic) {
+        fetchAllArticles().then((articles) => {
+            res.status(200).send({ articles })
+        }).catch((err) => {
+            next(err)
+        })
+    } else{
+        
+        const query1 = fetchAllArticles(topic)
+        const queries = [query1]
+
+        const query2 = checkTopicExists(topic)
+        queries.push(query2)
+
+        Promise.all(queries)
+        .then((results) => {
+            const articles = results[0]
+            res.status(200).send({ articles })
+        }).catch((err) => {
+            next(err)
+        })
+    }
 }
 
 exports.patchArticleVotes = (req, res, next) => {
