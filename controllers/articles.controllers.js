@@ -27,19 +27,21 @@ exports.patchArticleVotes = (req, res, next) => {
         fetchArticleById(article_id).then((article) => {
             res.status(200).send({article})
         })
+    } else {
+
+        const query1 = updateArticleVotes(article_id, inc_votes)
+        const queries = [query1]
+    
+        const query2 = checkArticleExists(article_id)
+        queries.push(query2)
+    
+        Promise.all(queries)
+    
+        .then((results) => {
+            const article = results[0]
+            res.status(200).send({article})
+        }).catch((err) => {
+            next(err)
+        })
     }
-    const query1 = updateArticleVotes(article_id, inc_votes)
-    const queries = [query1]
-
-    const query2 = checkArticleExists(article_id)
-    queries.push(query2)
-
-    Promise.all(queries)
-
-    .then((results) => {
-        const article = results[0]
-        res.status(200).send({article})
-    }).catch((err) => {
-        next(err)
-    })
 }
