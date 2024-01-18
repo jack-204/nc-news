@@ -14,14 +14,24 @@ exports.fetchArticleById = (article_id) => {
     
 }
 
-exports.fetchAllArticles = () => {
-    return db.query(`
+exports.fetchAllArticles = (topic) => {
+    const sqlQueryArray = [`
     SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.*) AS comment_count
     FROM articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;
-    `).then(({rows}) => {
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+    `, `
+     GROUP BY articles.article_id
+    ORDER BY articles.created_at DESC;`]
+
+    if(topic){
+        sqlQueryArray.splice(1, 0, `WHERE topic = '${topic}'`)
+    }
+
+    const sqlQuery = sqlQueryArray.join(` `)
+    return db.query(sqlQuery).then(({rows}) => {
+        if (rows.length === 0){
+            return Promise.reject({ status: 404, msg: 'Not found'})
+        }
         return rows
     })
 }

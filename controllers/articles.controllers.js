@@ -11,8 +11,11 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    fetchAllArticles().then((articles) => {
+    const{topic} = req.query
+    fetchAllArticles(topic).then((articles) => {
         res.status(200).send({ articles })
+    }).catch((err) => {
+        next(err)
     })
 }
 
