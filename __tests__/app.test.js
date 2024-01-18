@@ -371,4 +371,32 @@ describe('app.js', () => {
             })
         })
     })
+
+    describe('GET /api/articles?topic=mitch', () => {
+        test('200: articles returned are filtered by topic', () => {
+            return request(app).get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                articles.forEach((article) => {
+                    expect(article.topic).toBe('mitch')
+                })
+            })
+        })
+        test('404: no articles exist with given topic', () => {
+            return request(app).get('/api/articles?topic=nonsense')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('Not found')
+            })
+        })
+        test('200: returns all articles like previous endpoint for queries other than topic', () => {
+            return request(app).get('/api/articles?nonsense=something')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles.length).toBe(13)
+            })
+        })
+    })
 })
