@@ -1,4 +1,4 @@
-const {fetchArticleById, fetchAllArticles, updateArticleVotes} = require('../models/articles.models')
+const {fetchArticleById, fetchAllArticles, updateArticleVotes, addNewArticle} = require('../models/articles.models')
 const{checkArticleExists, checkTopicExists} = require('../utils/check-exists')
 
 exports.getArticleById = (req, res, next) => {
@@ -61,4 +61,16 @@ exports.patchArticleVotes = (req, res, next) => {
             next(err)
         })
     }
+}
+
+exports.postNewArticle = (req, res, next) => {
+    const newArticle = req.body
+
+    addNewArticle(newArticle).then((article) => {
+
+        res.status(201).send({article})
+    }).catch((err) => {
+        next(err)
+    })
+
 }
