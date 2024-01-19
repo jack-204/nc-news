@@ -1,30 +1,11 @@
 const express = require('express')
 const app = express()
 
-const {getTopics} = require('./controllers/topics.controllers')
-const {getEndpoints} = require('./controllers/api.controllers')
-const {getArticleById, getAllArticles, patchArticleVotes} = require('./controllers/articles.controllers')
-const {getCommentsFromArticle, postCommentToArticle, deleteCommentById} = require('./controllers/comments.controllers')
-const {getUsers} = require('./controllers/users.controllers')
 app.use(express.json())
 
-app.get('/api/topics', getTopics)
+const apiRouter = require('./routes/api-router')
 
-app.get('/api', getEndpoints)
-
-app.get('/api/articles/:article_id', getArticleById)
-
-app.get('/api/articles', getAllArticles)
-
-app.get('/api/articles/:article_id/comments', getCommentsFromArticle)
-
-app.post('/api/articles/:article_id/comments', postCommentToArticle)
-
-app.patch('/api/articles/:article_id', patchArticleVotes)
-
-app.delete('/api/comments/:comment_id', deleteCommentById)
-
-app.get('/api/users', getUsers)
+app.use('/api', apiRouter)
 
 app.use((err, req, res, next) => {
     if(err.status && err.msg) { //custom error handling
