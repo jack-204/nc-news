@@ -480,6 +480,27 @@ describe('app.js', () => {
                 expect(body.msg).toBe('Bad request')
             })
         })
-        
+    })
+    describe('GET /api/users/:username', () => {
+        test('200: returns a user object for a given username', () => {
+            return request(app).get('/api/users/lurker')
+            .expect(200)
+            .then(({body}) => {
+                const {user} = body
+                expect(user).toEqual({
+                    username: 'lurker',
+                    name: 'do_nothing',
+                    avatar_url:
+                      'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+                  })
+            })
+        })
+        test('404: returns an error when requested username is not found within the database', () => {
+            return request(app).get('/api/users/notauser')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('Not found')
+            })
+        })
     })
 })
