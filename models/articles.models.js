@@ -49,3 +49,22 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
         return rows[0]
     })
 }
+
+exports.addNewArticle = (newArticle) => {
+    if (!newArticle.article_img_url){
+        newArticle.article_img_url = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+    }
+    return db.query(`
+    INSERT INTO articles
+    (author, title, body, topic, article_img_url)
+    VALUES ($1, $2, $3, $4, $5) RETURNING article_id;`, 
+    [newArticle.author, newArticle.title, newArticle.body,
+    newArticle.topic, newArticle.article_img_url])
+    .then((output) => {
+        article_id = output.rows[0].article_id
+        return this.fetchArticleById(article_id)
+    })
+    .then((output) => {
+        return output
+    })
+}

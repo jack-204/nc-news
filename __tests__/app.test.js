@@ -552,4 +552,52 @@ describe('app.js', () => {
             })
         })
     })
+    describe('POST /api/articles', () => {
+        test('201: responds with the posted article', () => {
+            const input = {
+                author: 'lurker',
+                title: 'test title',
+                body: 'test body',
+                topic: 'paper',
+                article_img_url: 'testurl'
+            }
+
+            return request(app).post('/api/articles').send(input)
+            .expect(201)
+            .then(({body}) => {
+                const {article} = body
+                expect(article.author).toBe('lurker')
+                expect(article.title).toBe('test title')
+                expect(article.body).toBe('test body')
+                expect(article.topic).toBe('paper')
+                expect(article.article_img_url).toBe('testurl')
+                expect(typeof article.article_id).toBe('number')
+                expect(article.votes).toBe(0)
+                expect(typeof article.created_at).toBe('string')
+                expect(typeof article.created_at).toBe('string')
+            })
+        })
+        test('201: posts an article with the default img url', () => {
+            const input = {
+                author: 'lurker',
+                title: 'test title',
+                body: 'test body',
+                topic: 'paper',
+            }
+
+            return request(app).post('/api/articles').send(input)
+            .expect(201)
+            .then(({body}) => {
+                const {article} = body
+                expect(article.article_img_url).toBe('https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700')
+            })
+        })
+        test('400: responds with an error if missing keys', () => {
+            return request(app).post('/api/articles').send({})
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
 })
