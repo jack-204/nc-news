@@ -11,16 +11,16 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    const{topic} = req.query
+    const{topic, sort_by, order} = req.query
     if(!topic) {
-        fetchAllArticles().then((articles) => {
+        fetchAllArticles(topic, sort_by, order).then((articles) => {
             res.status(200).send({ articles })
         }).catch((err) => {
             next(err)
         })
     } else{
-        
-        const query1 = fetchAllArticles(topic)
+
+        const query1 = fetchAllArticles(topic, sort_by, order)
         const queries = [query1]
 
         const query2 = checkTopicExists(topic)

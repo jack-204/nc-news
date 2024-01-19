@@ -15,23 +15,28 @@ exports.fetchArticleById = (article_id) => {
     
 }
 
-exports.fetchAllArticles = (topic) => {
+exports.fetchAllArticles = (topic = undefined, sort_by = 'created_at', order = 'desc') => {
+    const isSortByValid = sort_by === 'article_id' || sort_by === 'title' || sort_by === 'topic' || sort_by === 'author' || sort_by === 'body' || sort_by === 'created_at' || sort_by === 'votes' || sort_by === 'article_img_url' ? true : false
+    const isOrderValid = order === 'asc' || order === 'desc' ? true : false
     const sqlQueryArray = [`
     SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.*) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id 
     `, `
      GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;`]
+    ORDER BY articles.${sort_by} ${order.toUpperCase()};`]
 
     if(topic){
         sqlQueryArray.splice(1, 0, `WHERE topic = '${topic}'`)
     }
-
-    const sqlQuery = sqlQueryArray.join(` `)
-    return db.query(sqlQuery).then(({rows}) => {
-        return rows
-    })
+    if (isSortByValid && isOrderValid){
+        const sqlQuery = sqlQueryArray.join(` `)
+        return db.query(sqlQuery).then(({rows}) => {
+            return rows
+        })
+    } else {
+        return Promise.reject({status: 400, msg: 'Bad request'})
+    }
 }
 
 exports.updateArticleVotes = (article_id, inc_votes) => {

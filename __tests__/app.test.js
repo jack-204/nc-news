@@ -447,4 +447,39 @@ describe('app.js', () => {
             })
         })
     })
+    describe('GET /api/articles?sort_by =', () => {
+        test('200: sorts articles by a valid column', () => {
+            return request(app).get('/api/articles?sort_by=title')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles).toBeSorted({key: 'title', descending: true})
+            })
+        })
+        test('400: responds with bad request if an invalid column in passed in', () => {
+            return request(app).get('/api/articles?sort_by=nonsense')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
+    describe('GET /api/articles?sortby=x&order=asc', () => {
+        test('200 sorts articles ascending', () => {
+            return request(app).get('/api/articles?sort_by=title&order=asc')
+            .expect(200)
+            .then(({body}) => {
+                const {articles} = body
+                expect(articles).toBeSorted({key: 'title', ascending: true})
+            })
+        })
+        test('400 returns bad request when the order is invalid', () => {
+            return request(app).get('/api/articles?order=nonsense')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        
+    })
 })
