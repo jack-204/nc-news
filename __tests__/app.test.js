@@ -503,4 +503,53 @@ describe('app.js', () => {
             })
         })
     })
+    describe('PATCH /api/comments/:comment_id', () => {
+        test('200: patch increases the votes on the requested comment', () => {
+            const input = {
+                inc_votes : 1 
+            }
+            return request(app).patch('/api/comments/1').send(input)
+            .expect(200)
+            .then(({body}) => {
+                const {comment} = body
+                expect(comment.votes).toBe(17)
+            })
+        })
+        test('200: returns original comment if not given inc_votes key', () => {
+            return request(app).patch('/api/comments/1').send({})
+            .expect(200)
+            .then(({body}) => {
+                const {comment} = body
+                const expected = {
+                    comment_id: 1,
+                    body: `Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!`,
+                    votes: 16,
+                    author: 'butter_bridge',
+                    article_id: 9,
+                    created_at: "2020-04-06T12:17:00.000Z"
+                }
+                expect(comment).toMatchObject(expected)
+            })
+        })
+        test('400: patch fails if given wrong data', () => {
+            const input = {
+                inc_votes: 'test'
+            }
+            return request(app).patch('/api/comments/1').send(input)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('404: patch fails if given id that does not refer to a comment', () => {
+            const input = {
+                inc_votes: 1
+            }
+            return request(app).patch('/api/comments/40000').send(input)
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('Comment not found')
+            })
+        })
+    })
 })
