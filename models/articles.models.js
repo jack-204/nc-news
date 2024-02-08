@@ -16,7 +16,7 @@ exports.fetchArticleById = (article_id) => {
 }
 
 exports.fetchAllArticles = (topic = undefined, sort_by = 'created_at', order = 'desc') => {
-    const isSortByValid = sort_by === 'article_id' || sort_by === 'title' || sort_by === 'topic' || sort_by === 'author' || sort_by === 'body' || sort_by === 'created_at' || sort_by === 'votes' || sort_by === 'article_img_url' ? true : false
+    const isSortByValid = sort_by === 'article_id' || sort_by === 'title' || sort_by === 'topic' || sort_by === 'author' || sort_by === 'body' || sort_by === 'created_at' || sort_by === 'votes' || sort_by === 'article_img_url' || sort_by === 'comment_count' ? true : false
     const isOrderValid = order === 'asc' || order === 'desc' ? true : false
     const sqlQueryArray = [`
     SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.*) AS comment_count
